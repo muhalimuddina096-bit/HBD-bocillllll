@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kado Spesial Untukmu</title>
+    <style>
+        /* CSS UNTUK TAMPILAN */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #1a1a2e, #16213e);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        /* Game Memory */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .card {
+            width: 100%;
+            padding-bottom: 100%;
+            background: #fff;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .card span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        .card.flipped span {
+            display: block;
+        }
+
+        .card.flipped {
+            background: #ff758c;
+        }
+
+        /* Animasi Sederhana */
+        .hidden { display: none; }
+        
+        button {
+            background: #ff758c;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="section1" class="container">
+        <h2>A Little Game for You 🎁</h2>
+        <p>Balik 2 Kartu yang Sama!</p>
+        <div class="grid" id="gameGrid"></div>
+    </div>
+
+    <div id="section2" class="container hidden">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJndXIzZmc3Z3R4eXN6eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1z/v6aOebdXRCUt2/giphy.gif" width="100">
+        <h2>Happy Birthday yaw! 🥳</h2>
+        <p id="wishText"></p>
+        <button onclick="location.reload()">Mulai Lagi</button>
+    </div>
+
+    <script>
+        // JAVASCRIPT UNTUK LOGIKA
+        const emojis = ['🌸', '🌸', '💖', '💖', '🎁', '🎁', '🎂', '🎂', '🌈', '🌈', '⭐', '⭐', '🎈', '🎈', '🍬', '🍬'];
+        let shuffledEmojis = emojis.sort(() => Math.random() - 0.5);
+        let flippedCards = [];
+        let matchedPairs = 0;
+
+        const grid = document.getElementById('gameGrid');
+
+        // Membuat Kartu
+        shuffledEmojis.forEach((emoji, index) => {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.emoji = emoji;
+            card.innerHTML = `<span>${emoji}</span>`;
+            card.addEventListener('click', flipCard);
+            grid.appendChild(card);
+        });
+
+        function flipCard() {
+            if (this.classList.contains('flipped') || flippedCards.length === 2) return;
+
+            this.classList.add('flipped');
+            flippedCards.push(this);
+
+            if (flippedCards.length === 2) {
+                if (flippedCards[0].dataset.emoji === flippedCards[1].dataset.emoji) {
+                    matchedPairs++;
+                    flippedCards = [];
+                    if (matchedPairs === emojis.length / 2) {
+                        setTimeout(showWish, 500);
+                    }
+                } else {
+                    setTimeout(() => {
+                        flippedCards.forEach(card => card.classList.remove('flipped'));
+                        flippedCards = [];
+                    }, 800);
+                }
+            }
+        }
+
+        function showWish() {
+            document.getElementById('section1').classList.add('hidden');
+            document.getElementById('section2').classList.remove('hidden');
+            
+            const text = "Semoga kamu selalu diberi kesehatan, hati yang tenang, dan langkah yang dimudahkan. Kamu makin kuat, makin sabar, dan makin percaya diri. Aku selalu dukung kamu di sini! ✨";
+            let i = 0;
+            function typeWriter() {
+                if (i < text.length) {
+                    document.getElementById('wishText').innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 50);
+                }
+            }
+            typeWriter();
+        }
+    </script>
+</body>
+</html>
