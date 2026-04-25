@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="game-section">
+            <h2>A Little Game for You 🎁</h2>
+            <p>Balik 2 Kartu yang Sama!</p>
+            <div class="grid" id="grid"></div>
+        </div>
+
+        <div id="wish-section" class="hidden">
+            <h2>Make a Wish 🥳</h2>
+            <div class="cake">
+                <div class="candle" id="candle">🕯️</div>
+            </div>
+            <p>Tutup matamu, buat permintaan, lalu klik tombol di bawah!</p>
+            <button onclick="blowCandle()">Tiup Lilin 🌬️</button>
+        </div>
+
+        <div id="message-section" class="hidden">
+            <div class="message-card">
+                <img src="https://via.placeholder.com/100" alt="Profile" class="profile-img">
+                <h3>Happy Birthday yaw! 🥳</h3>
+                <div class="scrolling-text">
+                    <p id="typed-text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
