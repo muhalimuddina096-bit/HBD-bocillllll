@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBD Sayang!</title>
+    <style>
+        body {
+            background-color: #ffeef2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 5px solid #ff69b4;
+            max-width: 400px;
+            position: relative;
+        }
+
+        h1 {
+            color: #ff1493;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .cat-box {
+            width: 100%;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-around;
+            position: relative;
+            height: 50px;
+        }
+
+        button {
+            padding: 10px 30px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #btnIya {
+            background-color: #90ee90;
+            color: white;
+        }
+
+        #btnTidak {
+            background-color: #ffb6c1;
+            color: white;
+            position: absolute;
+            left: 220px;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>HBD sayangggggggggg</h1>
+    <img src="https://cataas.com/cat/cute" alt="Kucing Lucu" class="cat-box">
+    
+    <div class="question">Kamu happy atau nggak?</div>
+    
+    <div class="btn-group">
+        <button id="btnIya" onclick="munculKembangApi()">Iya</button>
+        <button id="btnTidak" onmouseover="lariLarian()">Tidak</button>
+    </div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<script>
+    // Logika Tombol Lari
+    function lariLarian() {
+        const btn = document.getElementById('btnTidak');
+        const x = Math.random() * (window.innerWidth - btn.clientWidth);
+        const y = Math.random() * (window.innerHeight - btn.clientHeight);
+        
+        btn.style.position = 'fixed';
+        btn.style.left = x + 'px';
+        btn.style.top = y + 'px';
+    }
+
+    // Logika Kembang Api (Sederhana dengan Alert & Animasi teks)
+    function munculKembangApi() {
+        alert("❤️ ✨ BOOM! I LOVE YOU! ✨ ❤️");
+        // Kamu bisa menambahkan library JS khusus kembang api di sini jika ingin lebih pro
+        document.body.innerHTML = "<h1 style='color:pink; text-align:center; margin-top:20vh; font-size:50px;'>❤️❤️❤️<br>HAPPY BIRTHDAY!<br>❤️❤️❤️</h1>";
+        document.body.style.backgroundColor = "black";
+    }
+</script>
+
+</body>
+</html>
