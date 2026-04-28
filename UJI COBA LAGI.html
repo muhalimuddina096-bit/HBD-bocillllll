@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Test Website</title>
+    <style>
+        :root {
+            --primary: #ff4757;
+            --secondary: #2ed573;
+            --bg-dark: #1e1e1e;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { 
+            overflow: hidden; 
+            background: var(--bg-dark); 
+            height: 100vh; 
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* AUDIO */
+        audio { display: none; }
+
+        /* --- 1. INTRO LAYER --- */
+        #intro-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000000; z-index: 100;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: white; cursor: pointer; text-align: center;
+            transition: opacity 0.5s;
+            gap: 40px; 
+        }
+
+        .intro-text {
+            font-size: 1.5rem; font-weight: 600; padding: 0 20px;
+            position: relative; opacity: 0; transition: opacity 0.2s;
+            width: 100%; height: 60px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .intro-text.active { opacity: 1; }
+
+        #progress-container {
+            width: 80%; max-width: 300px; height: 25px;
+            background: #333; border-radius: 20px; 
+            display: none; overflow: hidden; border: 3px solid #555;
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.3);
+        }
+        #progress-bar {
+            width: 0%; height: 100%; background: linear-gradient(90deg, #ff6b81, #ff4757);
+            transition: width 0.1s;
+        }
+
+        .shake-screen { animation: screenShake 0.1s infinite; }
+        @keyframes screenShake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .hint { 
+            position: absolute; bottom: 50px; 
+            font-size: 0.8rem; color: #888; letter-spacing: 1px;
+            animation: pulse 1s infinite; 
+        }
+
+        /* --- 2. MAIN CARD LAYER --- */
+        #main-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #ff2093 0%, #ff8dc8 100%);
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.8s;
+            z-index: 10; 
+        }
+        #main-layer.visible { opacity: 1; pointer-events: all; }
+
+        .card {
+            background: white; width: 85%; max-width: 380px; 
+            border-radius: 20px; padding: 0 25px 30px; 
+            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            transform: scale(0.5); opacity: 0;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: 20px;
+            position: relative;
+            z-index: 20;
+        }
+        #main-layer.visible .card { transform: scale(1); opacity: 1; }
+
+        .photo-wrapper {
+            width: 150px; height: 150px;
+            margin: -75px auto 20px;
+            border-radius: 50%; border: 6px solid white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            background: #ddd; overflow: hidden;
+        }
+        .photo-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+        h1 { font-size: 2rem; color: #333; margin-bottom: 5px; font-weight: 800; line-height: 1.2; }
+        h2 { font-size: 1rem; color: var(--primary); font-weight: 600; margin-bottom: 15px; letter-spacing: 2px; }
+
+        /* --- WISH BOX SLIDER STYLE --- */
+        .wish { 
+            font-size: 0.95rem; color: #555; line-height: 1.6; 
+            background: #f0f2f5; padding: 15px; border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            min-height: 120px;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+        }
+        .wish:active { transform: scale(0.98); background: #e4e6eb; }
+        
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dots-container { margin-top: 10px; font-size: 1.2rem; }
+        .dot { color: #ccc; transition: 0.3s; margin: 0 2px; }
+        .dot.active { color: var(--primary); transform: scale(1.2); }
+
+        /* --- GIF STYLES --- */
+        #gif-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 8; overflow: hidden;
+        }
+        .floating-gif {
+            position: absolute; max-width: 180px; height: auto;
+            border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            opacity: 0; scale: 0.5;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #main-layer.visible .floating-gif { opacity: 1; scale: 1; }
+
+        canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+        @keyframes pulse { 50% { opacity: 0.5; } }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <audio id="music" loop preload="auto">
+        <source src="./ultah_cakep.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="intro-layer" onclick="handleTap()">
+        <div id="text-area" class="intro-text active">Halo...</div>
+        
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        
+        <div id="hint-text" class="hint">(Ketuk layar untuk lanjut)</div>
+    </div>
+
+    <div id="main-layer">
+        <canvas id="confetti"></canvas>
+        <div id="gif-container"></div>
+
+        <div class="card">
+            <div class="photo-wrapper">
+                <img src="BOCILLLLLLLLLLLLL" alt="Foto">
+            </div>
+            <h1>SELAMAT ULANG TAHUN BOCILLLLLLL !</h1>
+            <h2>PRICES SONYA MEI KODISTA YANG KE-20 EH YANG KE-17</h2>
+            <div style="font-size: 2.5rem; margin: 10px 0;">🎉🎂</div>
+            
+            <div class="wish" id="wish-box" onclick="gantiSlide()">
+                <div id="wish-content">
+                    Selamat ulang tahun yang ke-20!<br>
+                    Semoga di usia ini makin dewasa, sehat selalu, dan semua targetnya tercapai.<br>
+                    <b style="color: #ff4757; font-size: 0.8rem; margin-top:5px; display:block;">(Klik kotak ini ya... 👉)</b>
+                </div>
+            </div>
+            
+            <div class="dots-container"></div>
+        </div>
+    </div>
+
+    <script>
+        /* --- LOGIKA TAP --- */
+        const texts = [
+            "HALO ADEEEEEEEEK.",
+            "Eh Ada Adek",
+            "Main game bentar yuk",
+            "Nanti ada pesan rahasianya juga lohhh.",
+            "Tapi harus usaha dikit.",
+            "Siapin jari-jarinya...",
+            "Mulai ya?",
+            "3...",
+            "2...",
+            "1...",
+            "TAP LAYAR CEPAT!! 🔥"
+        ];
+
+        let idx = 0;
+        let tapCount = 0;
+        const maxTaps = 30; 
+        let isTapMode = false;
+        let audioWarmedUp = false; // Status pemanasan audio
+
+        const textArea = document.getElementById('text-area');
+        const hintText = document.getElementById('hint-text');
+        const progressBar = document.getElementById('progress-bar');
+        const progressContainer = document.getElementById('progress-container');
+        const introLayer = document.getElementById('intro-layer');
+        const music = document.getElementById('music');
+        const mainLayer = document.getElementById('main-layer');
+
+        function handleTap() {
+            // --- TEKNIK AUDIO WARM-UP ---
+            // Saat user pertama kali tap layar (di teks "Halo..."), kita play lalu pause secepat kilat.
+            // Ini membuat browser "siap" memutar lagu kapan saja tanpa delay loading lagi.
+            if (!audioWarmedUp) {
+                music.volume = 0; // Matikan suara dulu biar ga kaget
+                music.play().then(() => {
+                    music.pause();
+                    music.currentTime = 0;
+                    music.volume = 1; // Balikin volume
+                }).catch(e => console.log("Audio warm-up failed", e));
+                audioWarmedUp = true;
+            }
+
+            if (!isTapMode) {
+                idx++;
+                if (idx < texts.length) {
+                    changeText(texts[idx]);
+                    if (idx === texts.length - 1) {
+                        isTapMode = true;
+                        hintText.style.display = 'none';
+                        progressContainer.style.display = 'block';
+                        textArea.style.color = '#ff4757';
+                        textArea.style.fontSize = '2rem';
+                    }
+                }
+                return;
+            }
+
+            if (isTapMode && tapCount < maxTaps) {
+                tapCount++;
+                const percent = (tapCount / maxTaps) * 100;
+                progressBar.style.width = percent + '%';
+
+                introLayer.classList.remove('shake-screen');
+                void introLayer.offsetWidth;
+                introLayer.classList.add('shake-screen');
+                
+                if(navigator.vibrate) navigator.vibrate(50);
+
+                if(tapCount > 10) textArea.innerText = "AYO TERUS!! 🔥";
+                if(tapCount > 15) textArea.innerText = "DIKIT LAGI!! 😱";
+                if(tapCount > 20) textArea.innerText = "AWAS ADA JUMSCER !👻";
+                
+                if (tapCount >= maxTaps) {
+                    triggerSurprise();
+                }
+            }
+        }
+
+        function changeText(txt) {
+            textArea.style.opacity = 0;
+            setTimeout(() => { textArea.innerText = txt; textArea.style.opacity = 1; }, 100);
+        }
+
+        function triggerSurprise() {
+            isTapMode = false;
+            introLayer.style.opacity = 0;
+            if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+
+            setTimeout(() => {
+                introLayer.style.display = 'none';
+                mainLayer.classList.add('visible');
+                
+                // PLAY MUSIK DISINI (Sekarang harusnya INSTAN karena sudah di-warmup)
+                music.play().catch(e => console.log("Music failed"));
+                
+                startConfetti();
+                spawnGifs(); 
+            }, 500);
+        }
+
+        /* --- LOGIKA SLIDE UCAPAN --- */
+        const slides = [
+            `Selamat ulang tahun yang ke-20 Bocilllllll!<br>
+            eh salah yang ke-17 Semoga km dikasih kesehatan,semangat dan semua yang kamu impikan tercapai.<br>
+            <b style="color: #ff4757; font-size: 0.8rem; margin-top:5px; display:block;">(Klik lagi dong... 👉)</b>`,
+
+            `Mas mintak maaf ya nggak bisa ngasih kado tapi nanti kita jalan jalan aja dulu ya kado nya nyusul<br>
+            Mas mintak maaf kalo selama ini mas udah usil sering bikin kamu marah marah mas mintak maaf ya😁<br>
+            <b style="color: #ff4757; font-size: 0.8rem; margin-top:5px; display:block;">(Klik lagi dong... 👉)</b>`,
+
+            `moga moga dengan datang nya hari istimewa ini kamu jadi pribadi yang lebih baik ya sayang ya .<br>
+            Ingat yang semangat kuliah nya jangan males males,Selamat menikmati hari terbaik kamu Bocilllllll<br>
+            <b>Happy Birthday Sayangku ! 🥳</b><br>
+            <b>Enjoy your special day! 😇</b>`
+        ];
+
+        let currentSlideIndex = 0;
+        const wishContent = document.getElementById('wish-content');
+        const dotsContainer = document.querySelector('.dots-container');
+        
+        // Render Dots Otomatis
+        dotsContainer.innerHTML = '';
+        slides.forEach((_, i) => {
+            const span = document.createElement('span');
+            span.classList.add('dot');
+            if(i === 0) span.classList.add('active');
+            span.innerHTML = '●';
+            dotsContainer.appendChild(span);
+        });
+        const dots = document.querySelectorAll('.dot');
+
+        function gantiSlide() {
+            wishContent.classList.remove('fade-in');
+            void wishContent.offsetWidth; 
+            
+            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+            
+            setTimeout(() => {
+                wishContent.innerHTML = slides[currentSlideIndex];
+                wishContent.classList.add('fade-in');
+                
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentSlideIndex);
+                });
+            }, 10);
+        }
+
+        /* --- LOGIKA GIF --- */
+        const gifUrls = [
+            "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNDY1MHk5aTZldzd1emZpZ2s3YWM0ZXNqdWF4N2RveHE5YTVpOW82OCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ytu2GUYbvhz7zShGwS/giphy.gif", 
+            "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm9lMjFkcmZoajl6eWcxc2lzeWpzbmdmNXNoM2tyYTEwdDEyamtraSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Jj8l7dQHN8P1afc7CB/giphy.gif",
+            "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnRneDR5MzFzY2d2M2k4dWQ0bTRiOG1sdjZnMm4ycW1lbjZ4dnpjaiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Vi0Ws3t4JSLOgdkaBq/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NG8ydDdqNzlmdGR2cGZqZnViN2UwYXlteWN6YnBkY2E0M251cWE5eCZlcD12MV9naWZzX3JlbGF0ZWQmY3Q9Zw/0OgdJVNjbcIifqSb7U/giphy.gif"
+        ];
+
+        const zones = [
+            { top: '1%', left: '1%' },    
+            { top: '1%', right: '1%' },   
+            { bottom: '1%', left: '1%' }, 
+            { bottom: '1%', right: '1%' } 
+        ];
+
+        function spawnGifs() {
+            const container = document.getElementById('gif-container');
+            for (let i = 0; i < 4; i++) {
+                const url = gifUrls[i % gifUrls.length];
+                const img = document.createElement('img');
+                img.src = url;
+                img.classList.add('floating-gif');
+                const zone = zones[i];
+                if(zone.top) img.style.top = zone.top;
+                if(zone.bottom) img.style.bottom = zone.bottom;
+                if(zone.left) img.style.left = zone.left;
+                if(zone.right) img.style.right = zone.right;
+                const rotation = Math.random() * 40 - 20; 
+                img.style.transform = `rotate(${rotation}deg) scale(0.5)`;
+                container.appendChild(img);
+            }
+        }
+
+        /* --- CONFETTI --- */
+        const canvas = document.getElementById('confetti');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        function startConfetti() {
+            const colors = ['#ff4757', '#2ed573', '#1e90ff', '#ffa502'];
+            for(let i=0; i<200; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 8 + 4,
+                    speedY: Math.random() * 4 + 2,
+                    speedX: Math.random() * 4 - 2,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rot: Math.random() * 360
+                });
+            }
+            animate();
+        }
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            particles.forEach(p => {
+                p.y += p.speedY; p.x += p.speedX;
+                if(p.y > canvas.height) p.y = -10;
+                ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI/180);
+                ctx.fillStyle = p.color; ctx.fillRect(0,0,p.size,p.size); ctx.restore();
+            });
+            requestAnimationFrame(animate);
+        }
+    </script>
+</body>
+
+</html>
